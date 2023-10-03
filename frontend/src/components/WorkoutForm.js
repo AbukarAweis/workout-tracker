@@ -1,10 +1,14 @@
 import { useState } from "react"
+import {useWorkoutsContext} from '../hooks/useWorkoutsContext'
 
 const WorkoutForm = () => {
+    const {dispatch} = useWorkoutsContext()
+
     const [title, setTitle] = useState('')
     const [weight, setWeight] = useState('')
     const [reps, setReps] = useState('')
     const [error, setError] = useState(null)
+    const [emptyFields, setEmptyFields] = useState([])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -22,13 +26,16 @@ const WorkoutForm = () => {
 
         if (!response.ok) {
             setError(json.error)
+            setEmptyFields(json.emptyFields)
         }
         if (response.ok) {
             setTitle('')
             setWeight('')
             setReps('')
             setError(null)
+            setEmptyFields([])
             console.log('new workout added', json)
+            dispatch({type: 'CREATE_WORKOUT', payload: json})
         }
     }
 
@@ -36,11 +43,12 @@ const WorkoutForm = () => {
         <form className="create" onSubmit={handleSubmit}>
             <h3>Add a New Workout</h3>
 
-            <label>Exercise Title:</label>
+            <label>Exercise Name:</label>
             <input
                 type="text"
                 onChange={(e) => setTitle(e.target.value)} 
                 value={title}
+                className={emptyFields.includes('title') ? 'error' : ''}
             />
 
             <label>Weight (lbs):</label>
@@ -48,6 +56,7 @@ const WorkoutForm = () => {
                 type="number"
                 onChange={(e) => setWeight(e.target.value)} 
                 value={weight}
+                className={emptyFields.includes('weight') ? 'error' : ''}
             />
 
             <label>Reps:</label>
@@ -55,6 +64,7 @@ const WorkoutForm = () => {
                 type="number"
                 onChange={(e) => setReps(e.target.value)} 
                 value={reps}
+                className={emptyFields.includes('reps') ? 'error' : ''}
             />
 
             <button>Add Workout</button>
