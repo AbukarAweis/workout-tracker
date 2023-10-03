@@ -16,7 +16,7 @@ const WorkoutForm = () => {
         e.preventDefault()
 
         if (!user) {
-            setError('You must be logged in')
+            setError('You Must Be Logged In')
             return
         }
 
